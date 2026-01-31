@@ -139,7 +139,7 @@ function renderTodos(todos) {
             </td>
             <td class="todo-actions">
                 <button class="delete-btn" onclick="deleteTodo('${todo.id}')" title="Delete todo">
-                    🗑️
+                    ✕
                 </button>
             </td>
         `;

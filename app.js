@@ -1,12 +1,6 @@
 // Initialize PocketBase
 const pb = new PocketBase('https://training-pocketbase.g5amlv.easypanel.host');
 
-// Check if user is already logged in
-if (pb.authStore.isValid) {
-    showTodoSection();
-    loadTodos();
-}
-
 // Auth Functions
 function showSignup() {
     document.getElementById('login-form').classList.add('hidden');
@@ -69,6 +63,7 @@ function logout() {
 function showTodoSection() {
     document.getElementById('auth-section').classList.add('hidden');
     document.getElementById('todo-section').classList.remove('hidden');
+    document.getElementById('user-info-footer').classList.remove('hidden');
     
     // Display logged in user email
     const userEmail = pb.authStore.model?.email || 'Unknown User';
@@ -77,6 +72,7 @@ function showTodoSection() {
 
 function showAuthSection() {
     document.getElementById('todo-section').classList.add('hidden');
+    document.getElementById('user-info-footer').classList.add('hidden');
     document.getElementById('auth-section').classList.remove('hidden');
 }
 
@@ -88,6 +84,7 @@ async function loadTodos() {
             filter: `user = "${pb.authStore.model.id}"`
         });
         
+        console.log('Loaded todos:', records);
         renderTodos(records);
     } catch (error) {
         console.error('Error loading todos:', error);
@@ -142,9 +139,11 @@ async function addTodo() {
             user: pb.authStore.model.id
         };
         
-        await pb.collection('todos').create(data);
+        console.log('Creating todo:', data);
+        const newTodo = await pb.collection('todos').create(data);
+        console.log('Todo created:', newTodo);
         input.value = '';
-        loadTodos();
+        await loadTodos();
     } catch (error) {
         console.error('Error adding todo:', error);
         console.error('Error details:', error.response);
@@ -170,8 +169,15 @@ async function deleteTodo(id) {
     }
 }
 
-// Allow Enter key to submit
+// Setup event listeners after DOM loads
 document.addEventListener('DOMContentLoaded', () => {
+    // Check if user is already logged in
+    if (pb.authStore.isValid) {
+        showTodoSection();
+        loadTodos();
+    }
+    
+    // Allow Enter key to submit
     document.getElementById('todo-input')?.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') addTodo();
     });

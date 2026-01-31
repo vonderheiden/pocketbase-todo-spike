@@ -85,19 +85,40 @@ async function loadTodos() {
         });
         
         console.log('Loaded todos:', records);
+        console.log('Number of todos:', records.length);
         renderTodos(records);
     } catch (error) {
         console.error('Error loading todos:', error);
         console.error('Error details:', error.response);
-        // If collection doesn't exist, show helpful message
-        if (error.status === 404) {
-            alert('The "todos" collection does not exist in PocketBase. Please create it first.');
+        
+        // Try without sorting if that's the issue
+        try {
+            console.log('Retrying without sort...');
+            const records = await pb.collection('todos').getFullList({
+                filter: `user = "${pb.authStore.model.id}"`
+            });
+            console.log('Loaded todos (no sort):', records);
+            renderTodos(records);
+        } catch (retryError) {
+            console.error('Retry also failed:', retryError);
+            // If collection doesn't exist, show helpful message
+            if (error.status === 404) {
+                alert('The "todos" collection does not exist in PocketBase. Please create it first.');
+            }
         }
     }
 }
 
 function renderTodos(todos) {
     const todoList = document.getElementById('todo-list');
+    
+    console.log('Rendering todos:', todos);
+    console.log('Todo list element:', todoList);
+    
+    if (!todoList) {
+        console.error('Todo list element not found!');
+        return;
+    }
     
     if (todos.length === 0) {
         todoList.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #999;">No todos yet. Add one above!</td></tr>';
@@ -124,13 +145,21 @@ function renderTodos(todos) {
         `;
         todoList.appendChild(tr);
     });
+    
+    console.log('Rendered', todos.length, 'todos');
 }
 
 async function addTodo() {
     const input = document.getElementById('todo-input');
     const text = input.value.trim();
     
-    if (!text) return;
+    if (!text) {
+        console.log('Empty input, not adding todo');
+        return;
+    }
+    
+    console.log('Auth store model:', pb.authStore.model);
+    console.log('User ID:', pb.authStore.model?.id);
     
     try {
         const data = {
@@ -139,14 +168,19 @@ async function addTodo() {
             user: pb.authStore.model.id
         };
         
-        console.log('Creating todo:', data);
+        console.log('Creating todo with data:', data);
         const newTodo = await pb.collection('todos').create(data);
-        console.log('Todo created:', newTodo);
+        console.log('Todo created successfully:', newTodo);
+        
         input.value = '';
+        console.log('Cleared input, now loading todos...');
+        
         await loadTodos();
+        console.log('Todos reloaded');
     } catch (error) {
         console.error('Error adding todo:', error);
         console.error('Error details:', error.response);
+        console.error('Error data:', error.response?.data);
         alert('Failed to add todo: ' + (error.response?.message || error.message || 'Unknown error'));
     }
 }

@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "pocketbase": {
+      "command": "npx",
+      "args": ["-y", "@mabeldata/pocketbase-mcp"],
+      "env": {
+        "POCKETBASE_URL": "https://training-pocketbase.g5amlv.easypanel.host",
+        "POCKETBASE_ADMIN_EMAIL": "your-admin@email.com",
+        "POCKETBASE_ADMIN_PASSWORD": "your-secure-password"
+      },
+      "disabled": false,
+      "autoApprove": []
+    }
+  }
+}

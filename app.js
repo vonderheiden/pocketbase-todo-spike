@@ -69,6 +69,10 @@ function logout() {
 function showTodoSection() {
     document.getElementById('auth-section').classList.add('hidden');
     document.getElementById('todo-section').classList.remove('hidden');
+    
+    // Display logged in user email
+    const userEmail = pb.authStore.model?.email || 'Unknown User';
+    document.getElementById('user-email').textContent = userEmail;
 }
 
 function showAuthSection() {
@@ -97,18 +101,31 @@ async function loadTodos() {
 
 function renderTodos(todos) {
     const todoList = document.getElementById('todo-list');
+    
+    if (todos.length === 0) {
+        todoList.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #999;">No todos yet. Add one above!</td></tr>';
+        return;
+    }
+    
     todoList.innerHTML = '';
     
     todos.forEach(todo => {
-        const li = document.createElement('li');
-        li.className = `todo-item ${todo.completed ? 'completed' : ''}`;
-        li.innerHTML = `
-            <input type="checkbox" ${todo.completed ? 'checked' : ''} 
-                   onchange="toggleTodo('${todo.id}', ${!todo.completed})">
-            <span>${todo.text}</span>
-            <button class="delete-btn" onclick="deleteTodo('${todo.id}')">Delete</button>
+        const tr = document.createElement('tr');
+        tr.className = todo.completed ? 'completed' : '';
+        tr.innerHTML = `
+            <td class="todo-text ${todo.completed ? 'strikethrough' : ''}">${todo.text}</td>
+            <td class="todo-actions">
+                <button class="complete-btn" onclick="toggleTodo('${todo.id}', ${!todo.completed})" title="${todo.completed ? 'Mark as incomplete' : 'Mark as complete'}">
+                    ${todo.completed ? '↩️' : '✓'}
+                </button>
+            </td>
+            <td class="todo-actions">
+                <button class="delete-btn" onclick="deleteTodo('${todo.id}')" title="Delete todo">
+                    🗑️
+                </button>
+            </td>
         `;
-        todoList.appendChild(li);
+        todoList.appendChild(tr);
     });
 }
 

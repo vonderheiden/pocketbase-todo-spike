@@ -43,7 +43,20 @@
                 <button onclick="addTodo()">Add</button>
             </div>
             
-            <ul id="todo-list" class="todo-list"></ul>
+            <table class="todo-table">
+                <thead>
+                    <tr>
+                        <th>Task</th>
+                        <th>Complete</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody id="todo-list"></tbody>
+            </table>
+            
+            <div class="user-info">
+                <span>Logged in as: <strong id="user-email"></strong></span>
+            </div>
         </div>
     </div>
 

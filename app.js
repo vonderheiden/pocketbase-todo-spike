@@ -40,7 +40,9 @@ async function signup() {
         showLogin();
     } catch (error) {
         console.error('Signup error:', error);
-        alert('Signup failed: ' + (error.message || 'Unknown error'));
+        console.error('Error details:', error.response);
+        const errorMsg = error.response?.data ? JSON.stringify(error.response.data) : error.message;
+        alert('Signup failed: ' + errorMsg);
     }
 }
 
@@ -85,6 +87,11 @@ async function loadTodos() {
         renderTodos(records);
     } catch (error) {
         console.error('Error loading todos:', error);
+        console.error('Error details:', error.response);
+        // If collection doesn't exist, show helpful message
+        if (error.status === 404) {
+            alert('The "todos" collection does not exist in PocketBase. Please create it first.');
+        }
     }
 }
 
@@ -123,7 +130,8 @@ async function addTodo() {
         loadTodos();
     } catch (error) {
         console.error('Error adding todo:', error);
-        alert('Failed to add todo');
+        console.error('Error details:', error.response);
+        alert('Failed to add todo: ' + (error.response?.message || error.message || 'Unknown error'));
     }
 }
 

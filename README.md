@@ -10,7 +10,14 @@ This is a simple todo list application built with PocketBase to understand its d
 
 ## PocketBase Setup Required
 
-Before running this app, you need to set up your PocketBase collections:
+**IMPORTANT: You must create the `todos` collection in PocketBase before the app will work!**
+
+See [SETUP.md](SETUP.md) for detailed step-by-step instructions.
+
+### Quick Setup:
+1. Go to your PocketBase admin: https://training-pocketbase.g5amlv.easypanel.host/_/
+2. Create a `todos` collection with fields: `text` (text), `completed` (boolean), `user` (relation to users)
+3. Set API rules (see SETUP.md for details)
 
 ### 1. Users Collection
 The default `users` collection should already exist in PocketBase with email/password auth enabled.
